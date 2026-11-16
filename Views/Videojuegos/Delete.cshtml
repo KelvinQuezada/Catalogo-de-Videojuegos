@@ -1,0 +1,52 @@
+@model Videojuego
+
+@{
+    ViewData["Title"] = "Eliminar videojuego";
+}
+
+<div class="page-header">
+    <h1>Eliminar videojuego</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Volver al listado</a>
+</div>
+
+<div class="form-card">
+    <div class="alert alert-warning">
+        ¿Confirma que desea eliminar este videojuego? También se eliminarán sus
+        asociaciones con plataformas en la tabla intermedia.
+    </div>
+
+    <dl class="row detalle-dl mb-4">
+        <dt class="col-sm-3">Título</dt>
+        <dd class="col-sm-9">@Model.Titulo</dd>
+
+        <dt class="col-sm-3">Género</dt>
+        <dd class="col-sm-9">@Model.Genero?.Nombre</dd>
+
+        <dt class="col-sm-3">Desarrolladora</dt>
+        <dd class="col-sm-9">@Model.Desarrolladora?.Nombre</dd>
+
+        <dt class="col-sm-3">Precio</dt>
+        <dd class="col-sm-9">@Model.Precio.ToString("0.00") USD</dd>
+
+        <dt class="col-sm-3 mb-0">Plataformas</dt>
+        <dd class="col-sm-9 mb-0">
+            @if (Model.Plataformas.Count == 0)
+            {
+                <span class="text-muted">Sin plataformas asociadas</span>
+            }
+            else
+            {
+                @foreach (var plataforma in Model.Plataformas)
+                {
+                    <span class="badge badge-plataforma">@plataforma.Nombre</span>
+                }
+            }
+        </dd>
+    </dl>
+
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+        <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancelar</a>
+    </form>
+</div>

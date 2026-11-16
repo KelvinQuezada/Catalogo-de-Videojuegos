@@ -1,0 +1,75 @@
+@model Genero
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<div class="page-header">
+    <div>
+        <h1>@Model.Nombre</h1>
+        <div class="mt-1">
+            @if (Model.Popular)
+            {
+                <span class="badge bg-success-subtle text-success-emphasis">Género popular</span>
+            }
+            <span class="badge bg-primary rounded-pill">@Model.Videojuegos.Count videojuego(s)</span>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="form-card">
+            <h2 class="h6 text-uppercase text-muted">Descripción</h2>
+            <p class="mb-0">@(string.IsNullOrWhiteSpace(Model.Descripcion) ? "Este género no tiene descripción." : Model.Descripcion)</p>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="form-card">
+            <h2 class="h6 text-uppercase text-muted">Videojuegos de este género</h2>
+            <p class="text-muted small">
+                Lado dependiente de la relación 1:N: registros de Videojuego cuyo
+                <code>GeneroId</code> apunta a este género.
+            </p>
+
+            @if (Model.Videojuegos.Count == 0)
+            {
+                <p class="text-muted mb-0">Este género todavía no tiene videojuegos registrados.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Desarrolladora</th>
+                                <th>Lanzamiento</th>
+                                <th class="text-end">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var v in Model.Videojuegos.OrderBy(v => v.Titulo))
+                        {
+                            <tr>
+                                <td>
+                                    <a class="text-decoration-none" asp-controller="Videojuegos" asp-action="Details" asp-route-id="@v.Id">@v.Titulo</a>
+                                </td>
+                                <td>@v.Desarrolladora?.Nombre</td>
+                                <td class="text-nowrap">@v.FechaLanzamiento.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end text-nowrap">@v.Precio.ToString("0.00") USD</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

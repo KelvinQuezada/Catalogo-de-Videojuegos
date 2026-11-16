@@ -1,0 +1,44 @@
+@model Genero
+
+@{
+    ViewData["Title"] = "Eliminar género";
+}
+
+<div class="page-header">
+    <h1>Eliminar género</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Volver al listado</a>
+</div>
+
+<div class="form-card">
+    @if (Model.Videojuegos.Count > 0)
+    {
+        <div class="alert alert-danger">
+            No se puede eliminar <strong>@Model.Nombre</strong> porque tiene
+            @Model.Videojuegos.Count videojuego(s) asociado(s). La llave foránea
+            está configurada con <code>ON DELETE RESTRICT</code>.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            ¿Confirma que desea eliminar el género <strong>@Model.Nombre</strong>?
+        </div>
+    }
+
+    <dl class="row detalle-dl mb-4">
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+        <dt class="col-sm-3">Descripción</dt>
+        <dd class="col-sm-9">@Model.Descripcion</dd>
+        <dt class="col-sm-3 mb-0">Videojuegos asociados</dt>
+        <dd class="col-sm-9 mb-0">@Model.Videojuegos.Count</dd>
+    </dl>
+
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger" disabled="@(Model.Videojuegos.Count > 0)">
+            Eliminar definitivamente
+        </button>
+        <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancelar</a>
+    </form>
+</div>

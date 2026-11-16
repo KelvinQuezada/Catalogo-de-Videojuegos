@@ -1,0 +1,100 @@
+@model Videojuego
+
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<div class="page-header">
+    <div>
+        <h1>@Model.Titulo</h1>
+        <div class="mt-1">
+            @if (Model.Disponible)
+            {
+                <span class="badge bg-success-subtle text-success-emphasis">Disponible</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary-subtle text-secondary-emphasis">No disponible</span>
+            }
+            @if (Model.Multijugador)
+            {
+                <span class="badge bg-info-subtle text-info-emphasis">Multijugador</span>
+            }
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="form-card">
+            <dl class="row detalle-dl mb-0">
+                <dt class="col-sm-4">Género</dt>
+                <dd class="col-sm-8">
+                    <a asp-controller="Generos" asp-action="Details" asp-route-id="@Model.GeneroId" class="text-decoration-none">
+                        @Model.Genero?.Nombre
+                    </a>
+                </dd>
+
+                <dt class="col-sm-4">Desarrolladora</dt>
+                <dd class="col-sm-8">
+                    <a asp-controller="Desarrolladoras" asp-action="Details" asp-route-id="@Model.DesarrolladoraId" class="text-decoration-none">
+                        @Model.Desarrolladora?.Nombre (@Model.Desarrolladora?.Pais)
+                    </a>
+                </dd>
+
+                <dt class="col-sm-4">Precio</dt>
+                <dd class="col-sm-8">@Model.Precio.ToString("0.00") USD</dd>
+
+                <dt class="col-sm-4">Fecha de lanzamiento</dt>
+                <dd class="col-sm-8">@Model.FechaLanzamiento.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4">Fecha de registro</dt>
+                <dd class="col-sm-8">@Model.FechaRegistro.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-4">Cantidad de jugadores</dt>
+                <dd class="col-sm-8">@Model.CantidadJugadores</dd>
+
+                <dt class="col-sm-4">Clasificación por edad</dt>
+                <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.ClasificacionPorEdad) ? "Sin clasificar" : Model.ClasificacionPorEdad)</dd>
+
+                <dt class="col-sm-4">Observación</dt>
+                <dd class="col-sm-8 mb-0">@(string.IsNullOrWhiteSpace(Model.Observacion) ? "Sin observaciones" : Model.Observacion)</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="form-card">
+            <h2 class="h6 text-uppercase text-muted">Descripción</h2>
+            <p>@(string.IsNullOrWhiteSpace(Model.Descripcion) ? "Este videojuego no tiene descripción registrada." : Model.Descripcion)</p>
+
+            <h2 class="h6 text-uppercase text-muted mt-4">
+                Plataformas (@Model.Plataformas.Count)
+            </h2>
+            <p class="text-muted small">Relación muchos a muchos con la entidad Plataforma.</p>
+            @if (Model.Plataformas.Count == 0)
+            {
+                <p class="text-muted mb-0">No tiene plataformas asociadas.</p>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var plataforma in Model.Plataformas.OrderBy(p => p.Nombre))
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <a class="text-decoration-none" asp-controller="Plataformas" asp-action="Details" asp-route-id="@plataforma.Id">
+                                @plataforma.Nombre
+                            </a>
+                            <span class="text-muted small">@plataforma.Fabricante</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

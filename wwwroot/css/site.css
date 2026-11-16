@@ -1,0 +1,129 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: #f6f7fb;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* Encabezado de sección */
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.page-header h1 {
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+/* Tarjetas de resumen */
+.stat-card {
+  border: 1px solid #e3e6ef;
+  border-radius: .75rem;
+  background: #fff;
+  padding: 1rem 1.25rem;
+  height: 100%;
+}
+
+.stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #1f2a44;
+}
+
+.stat-card .stat-label {
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .75rem;
+}
+
+/* Tablas */
+.table-card {
+  background: #fff;
+  border: 1px solid #e3e6ef;
+  border-radius: .75rem;
+  overflow: hidden;
+}
+
+.table-card .table {
+  margin-bottom: 0;
+}
+
+.table-card thead th {
+  background: #f1f3f9;
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: #475069;
+  white-space: nowrap;
+}
+
+.badge-plataforma {
+  background: #e8edff;
+  color: #3446a8;
+  font-weight: 500;
+  margin: 0 .15rem .15rem 0;
+}
+
+/* Formularios */
+.form-card {
+  background: #fff;
+  border: 1px solid #e3e6ef;
+  border-radius: .75rem;
+  padding: 1.5rem;
+}
+
+.lista-plataformas {
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: .5rem;
+  padding: .75rem;
+  background: #fbfcff;
+}
+
+.detalle-dl dt {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.detalle-dl dd {
+  margin-bottom: .75rem;
+}
+
+.footer {
+  background: #fff;
+  font-size: .85rem;
+}

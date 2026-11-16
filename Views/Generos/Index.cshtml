@@ -1,0 +1,55 @@
+@model IEnumerable<Genero>
+
+@{
+    ViewData["Title"] = "Géneros";
+}
+
+<div class="page-header">
+    <h1>Géneros</h1>
+    <a class="btn btn-primary" asp-action="Create">+ Nuevo género</a>
+</div>
+
+<div class="table-card table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th class="text-center">Videojuegos</th>
+                <th class="text-center">Popular</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var g in Model)
+        {
+            <tr>
+                <td>
+                    <a class="text-decoration-none fw-medium" asp-action="Details" asp-route-id="@g.Id">@g.Nombre</a>
+                </td>
+                <td class="text-muted">@g.Descripcion</td>
+                <td class="text-center">
+                    <span class="badge bg-primary rounded-pill">@g.Videojuegos.Count</span>
+                </td>
+                <td class="text-center">
+                    @if (g.Popular)
+                    {
+                        <span class="badge bg-success-subtle text-success-emphasis">Sí</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis">No</span>
+                    }
+                </td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@g.Id">Ver</a>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@g.Id">Editar</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@g.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<p class="text-muted small mt-3">Total de géneros: @Model.Count()</p>

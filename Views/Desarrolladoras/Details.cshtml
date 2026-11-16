@@ -1,0 +1,99 @@
+@model Desarrolladora
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<div class="page-header">
+    <div>
+        <h1>@Model.Nombre</h1>
+        <div class="mt-1">
+            @if (Model.Activa)
+            {
+                <span class="badge bg-success-subtle text-success-emphasis">Activa</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary-subtle text-secondary-emphasis">Inactiva</span>
+            }
+            <span class="badge bg-primary rounded-pill">@Model.Videojuegos.Count videojuego(s)</span>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="form-card">
+            <dl class="row detalle-dl mb-0">
+                <dt class="col-6">País</dt>
+                <dd class="col-6 text-end">@Model.Pais</dd>
+
+                <dt class="col-6">Fundación</dt>
+                <dd class="col-6 text-end">@(Model.Fundacion?.ToString("dd/MM/yyyy") ?? "Sin dato")</dd>
+
+                <dt class="col-6">Empleados</dt>
+                <dd class="col-6 text-end">@(Model.Empleados?.ToString("N0") ?? "Sin dato")</dd>
+
+                <dt class="col-6 mb-0">Sitio web</dt>
+                <dd class="col-6 text-end mb-0">
+                    @if (!string.IsNullOrWhiteSpace(Model.SitioWeb))
+                    {
+                        <a href="@Model.SitioWeb" target="_blank" rel="noopener">Abrir sitio</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sin dato</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="form-card">
+            <h2 class="h6 text-uppercase text-muted">Videojuegos de esta desarrolladora</h2>
+            <p class="text-muted small">
+                Lado dependiente de la relación 1:N: todos los registros de Videojuego
+                cuyo <code>DesarrolladoraId</code> coincide con esta entidad.
+            </p>
+
+            @if (Model.Videojuegos.Count == 0)
+            {
+                <p class="text-muted mb-0">Esta desarrolladora no tiene videojuegos registrados.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Género</th>
+                                <th>Lanzamiento</th>
+                                <th class="text-end">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var v in Model.Videojuegos.OrderBy(v => v.Titulo))
+                        {
+                            <tr>
+                                <td>
+                                    <a class="text-decoration-none" asp-controller="Videojuegos" asp-action="Details" asp-route-id="@v.Id">@v.Titulo</a>
+                                </td>
+                                <td>@v.Genero?.Nombre</td>
+                                <td class="text-nowrap">@v.FechaLanzamiento.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end text-nowrap">@v.Precio.ToString("0.00") USD</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

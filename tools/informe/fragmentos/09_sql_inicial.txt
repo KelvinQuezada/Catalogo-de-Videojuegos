@@ -1,0 +1,84 @@
+-- =====================================================================
+-- Catálogo de videojuegos — carga de datos iniciales (etapa 1)
+-- Ejecutar DESPUÉS de: dotnet ef database update
+-- Esquema: migración InitialCreate (sin evolución ni relación N:N).
+-- =====================================================================
+
+-- BEGIN abre una transacción: si una sentencia falla, nada se guarda.
+BEGIN;
+
+-- 1. LIMPIEZA ORDENADA
+-- TRUNCATE vacía las cuatro tablas; RESTART IDENTITY reinicia los
+-- contadores de Id en 1 y CASCADE limpia también las tablas que
+-- dependan de ellas (la intermedia, cuando exista).
+-- Esto permite volver a ejecutar el script sin duplicar filas.
+TRUNCATE TABLE "Videojuegos", "Plataformas", "Desarrolladoras", "Generos"
+    RESTART IDENTITY CASCADE;
+
+-- 2. GÉNEROS (12 registros: catálogo pequeño y suficiente para clasificar
+--    los 100 videojuegos; no tendría sentido inventar 100 géneros).
+-- Los identificadores entre comillas dobles son obligatorios porque
+-- PostgreSQL los creó con mayúscula inicial (EF Core usa el nombre de
+-- la propiedad tal cual).
+INSERT INTO "Generos" ("Id", "Nombre", "Descripcion", "Popular") VALUES
+  (1, 'Acción', 'Combate en tiempo real, reflejos y habilidad motriz.', true),
+  (2, 'Aventura', 'Exploración, narrativa y resolución de acertijos.', true),
+  (3, 'Rol (RPG)', 'Progresión de personajes, estadísticas e historia.', true),
+  (4, 'Shooter', 'Combate con armas de fuego en primera o tercera persona.', true),
+  (5, 'Estrategia', 'Planificación de recursos, unidades o cartas.', false),
+  (6, 'Deportes', 'Simulación de disciplinas deportivas reales.', true),
+  (7, 'Carreras', 'Competición de velocidad con vehículos.', true),
+  (8, 'Simulación', 'Gestión de entornos, vidas o sistemas.', false),
+  (9, 'Plataformas', 'Saltos y desplazamiento por escenarios.', true),
+  (10, 'Terror', 'Suspenso, supervivencia y atmósfera inquietante.', false),
+  (11, 'Puzzle', 'Resolución de problemas lógicos.', false),
+  (12, 'Lucha', 'Combate cuerpo a cuerpo uno contra uno.', false);
+
+-- 3. DESARROLLADORAS (28 estudios reales que producen los títulos cargados).
+-- Los apóstrofes dentro de un texto se escapan duplicándolos: '' .
+INSERT INTO "Desarrolladoras" ("Id", "Nombre", "Pais", "Fundacion", "SitioWeb", "Empleados", "Activa") VALUES
+  (1, 'Nintendo EPD', 'Japón', '2015-09-16', 'https://www.nintendo.com', 6000, true),
+  (2, 'Rockstar Games', 'Estados Unidos', '1998-12-01', 'https://www.rockstargames.com', 2000, true),
+  (3, 'CD Projekt Red', 'Polonia', '2002-05-01', 'https://www.cdprojektred.com', 1200, true),
+  (4, 'FromSoftware', 'Japón', '1986-11-01', 'https://www.fromsoftware.jp', 400, true);
+  -- ... (24 filas más en el archivo completo)
+
+-- 4. PLATAFORMAS (12: consolas, PC, portátiles y móviles).
+INSERT INTO "Plataformas" ("Id", "Nombre", "Fabricante", "FechaLanzamiento", "Generacion", "PrecioBase", "Activa") VALUES
+  (1, 'PC', 'Microsoft', '1981-08-12', 1, NULL, true),
+  (2, 'PlayStation 5', 'Sony', '2020-11-12', 9, 499.99, true),
+  (3, 'PlayStation 4', 'Sony', '2013-11-15', 8, 299.99, true),
+  (6, 'Nintendo Switch', 'Nintendo', '2017-03-03', 8, 299.99, true);
+  -- ... (8 filas más en el archivo completo)
+
+-- 5. VIDEOJUEGOS (100 registros: entidad transaccional principal).
+-- Cada fila referencia un género y una desarrolladora ya insertados,
+-- por lo que el orden de carga (catálogos primero) es obligatorio.
+INSERT INTO "Videojuegos" ("Id", "Titulo", "Descripcion", "Precio", "FechaLanzamiento",
+                           "FechaRegistro", "Disponible", "CantidadJugadores",
+                           "ClasificacionPorEdad", "GeneroId", "DesarrolladoraId") VALUES
+  (1, 'The Legend of Zelda: Breath of the Wild',
+      'Exploración de mundo abierto en Hyrule con física y supervivencia.',
+      59.99, '2017-03-03', '2026-01-01 08:15:00-05', true, 1, 'E10+', 2, 1),
+  (2, 'Super Mario Odyssey',
+      'Mario viaja por reinos tridimensionales para rescatar a la princesa.',
+      49.99, '2017-10-27', '2026-04-02 09:15:00-05', true, 2, 'E', 9, 1);
+  -- ... (98 filas más en el archivo completo)
+
+-- 6. SINCRONIZAR LAS SECUENCIAS DE IDENTIDAD
+-- Al insertar Id explícitos, la secuencia interna queda en 1. Si después
+-- se crea un videojuego desde la interfaz, PostgreSQL intentaría usar el
+-- Id 1 y fallaría por llave duplicada. setval la coloca en el máximo real.
+SELECT setval(pg_get_serial_sequence('"Generos"', 'Id'), (SELECT MAX("Id") FROM "Generos"));
+SELECT setval(pg_get_serial_sequence('"Desarrolladoras"', 'Id'), (SELECT MAX("Id") FROM "Desarrolladoras"));
+SELECT setval(pg_get_serial_sequence('"Plataformas"', 'Id'), (SELECT MAX("Id") FROM "Plataformas"));
+SELECT setval(pg_get_serial_sequence('"Videojuegos"', 'Id'), (SELECT MAX("Id") FROM "Videojuegos"));
+
+-- COMMIT confirma la transacción: los datos quedan visibles y permanentes.
+COMMIT;
+
+-- Verificación rápida de conteos.
+SELECT (SELECT COUNT(*) FROM "Generos") AS generos,
+       (SELECT COUNT(*) FROM "Desarrolladoras") AS desarrolladoras,
+       (SELECT COUNT(*) FROM "Plataformas") AS plataformas,
+       (SELECT COUNT(*) FROM "Videojuegos") AS videojuegos;

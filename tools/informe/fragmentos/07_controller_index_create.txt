@@ -1,0 +1,108 @@
+using CatalogoVideojuegos.Data;
+using CatalogoVideojuegos.Models;
+using CatalogoVideojuegos.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+
+namespace CatalogoVideojuegos.Controllers;
+
+public class VideojuegosController : Controller
+{
+    // El contexto llega por inyección de dependencias: ASP.NET Core crea
+    // una instancia por petición y aquí se guarda en un campo de solo
+    // lectura. Es el único punto de contacto con PostgreSQL.
+    private readonly ApplicationDbContext _context;
+
+    public VideojuegosController(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    // ===============================================================
+    // READ — GET /Videojuegos?buscar=zelda
+    // ===============================================================
+    public async Task<IActionResult> Index(string? buscar)
+    {
+        // Se parte del DbSet y se agregan cargas anticipadas (Include)
+        // para que la vista pueda leer Genero, Desarrolladora y Plataformas
+        // sin consultas adicionales (evita el problema N+1).
+        var consulta = _context.Videojuegos
+            .Include(v => v.Genero)
+            .Include(v => v.Desarrolladora)
+            .Include(v => v.Plataformas)
+            .AsQueryable();          // Permite seguir componiendo la consulta.
+
+        // Filtro opcional por título. Se pasa a minúsculas en ambos lados
+        // para que la búsqueda no distinga mayúsculas.
+        if (!string.IsNullOrWhiteSpace(buscar))
+        {
+            var texto = buscar.Trim().ToLower();
+            consulta = consulta.Where(v => v.Titulo.ToLower().Contains(texto));
+        }
+
+        ViewData["Buscar"] = buscar;   // La vista conserva el texto buscado.
+
+        // ToListAsync materializa el SELECT. A partir de aquí ya no hay
+        // conexión abierta: la vista recibe una lista en memoria.
+        var videojuegos = await consulta
+            .OrderBy(v => v.Titulo)
+            .ToListAsync();
+
+        return View(videojuegos);
+    }
+
+    // ===============================================================
+    // CREATE — GET muestra el formulario
+    // ===============================================================
+    public async Task<IActionResult> Create()
+    {
+        var modelo = new VideojuegoFormViewModel
+        {
+            // Se precarga la fecha de hoy para no dejar el campo vacío.
+            Videojuego = new Videojuego
+            {
+                FechaLanzamiento = DateOnly.FromDateTime(DateTime.Today)
+            }
+        };
+        await CargarListasAsync(modelo);   // Llena los <select> y los checkboxes.
+        return View(modelo);
+    }
+
+    // ===============================================================
+    // CREATE — POST recibe el formulario
+    // ===============================================================
+    [HttpPost]
+    [ValidateAntiForgeryToken]   // Exige el token anti-falsificación del formulario.
+    public async Task<IActionResult> Create(VideojuegoFormViewModel modelo)
+    {
+        // Ejecuta los atributos [Required], [StringLength], [Range]...
+        // Si algo falla se vuelve a mostrar el formulario con los errores
+        // y con las listas recargadas.
+        if (!ModelState.IsValid)
+        {
+            await CargarListasAsync(modelo);
+            return View(modelo);
+        }
+
+        // Se sella la fecha de alta en UTC (requisito de Npgsql 10 para
+        // columnas timestamp with time zone).
+        modelo.Videojuego.FechaRegistro = DateTime.UtcNow;
+
+        // Los ids marcados en los checkboxes se traducen a entidades
+        // Plataforma que el contexto ya conoce; así EF Core inserta las
+        // filas de la tabla intermedia.
+        modelo.Videojuego.Plataformas =
+            await ObtenerPlataformasAsync(modelo.PlataformasSeleccionadas);
+
+        _context.Videojuegos.Add(modelo.Videojuego);  // Marca como Added.
+        await _context.SaveChangesAsync();            // Genera el INSERT y el RETURNING "Id".
+
+        // Mensaje de confirmación que sobrevive a la redirección.
+        TempData["Mensaje"] =
+            $"Videojuego \"{modelo.Videojuego.Titulo}\" registrado correctamente.";
+
+        // Patrón POST-Redirect-GET: evita reenviar el formulario al refrescar.
+        return RedirectToAction(nameof(Index));
+    }
+}

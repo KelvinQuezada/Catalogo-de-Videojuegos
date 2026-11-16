@@ -1,0 +1,61 @@
+@model IEnumerable<Plataforma>
+
+@{
+    ViewData["Title"] = "Plataformas";
+}
+
+<div class="page-header">
+    <h1>Plataformas</h1>
+    <a class="btn btn-primary" asp-action="Create">+ Nueva plataforma</a>
+</div>
+
+<div class="table-card table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Fabricante</th>
+                <th>Generación</th>
+                <th>Lanzamiento</th>
+                <th class="text-end">Precio base</th>
+                <th class="text-center">Videojuegos</th>
+                <th>Estado</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>
+                    <a class="text-decoration-none fw-medium" asp-action="Details" asp-route-id="@p.Id">@p.Nombre</a>
+                </td>
+                <td>@p.Fabricante</td>
+                <td>@(p.Generacion?.ToString() ?? "-")</td>
+                <td class="text-nowrap">@(p.FechaLanzamiento?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td class="text-end text-nowrap">@(p.PrecioBase?.ToString("0.00") ?? "-")</td>
+                <td class="text-center">
+                    <span class="badge bg-primary rounded-pill">@p.Videojuegos.Count</span>
+                </td>
+                <td>
+                    @if (p.Activa)
+                    {
+                        <span class="badge bg-success-subtle text-success-emphasis">Activa</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis">Inactiva</span>
+                    }
+                </td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@p.Id">Ver</a>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@p.Id">Editar</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@p.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<p class="text-muted small mt-3">Total de plataformas: @Model.Count()</p>

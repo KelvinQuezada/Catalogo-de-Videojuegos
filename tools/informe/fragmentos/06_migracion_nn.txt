@@ -1,0 +1,75 @@
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace CatalogoVideojuegos.Migrations
+{
+    /// <summary>
+    /// Tercera migración: relación muchos a muchos Videojuego ↔ Plataforma.
+    /// Fue generada con:
+    ///   dotnet ef migrations add AgregarRelacionVideojuegoPlataforma
+    /// No se escribió ninguna clase intermedia: EF Core dedujo la tabla a
+    /// partir de las dos colecciones ICollection del modelo.
+    /// </summary>
+    public partial class AgregarRelacionVideojuegoPlataforma : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            // -----------------------------------------------------------
+            // TABLA INTERMEDIA "PlataformaVideojuego"
+            // El nombre se forma uniendo los nombres de las dos entidades
+            // en orden alfabético (Plataforma + Videojuego).
+            // -----------------------------------------------------------
+            migrationBuilder.CreateTable(
+                name: "PlataformaVideojuego",
+                columns: table => new
+                {
+                    // Primera parte de la PK compuesta y FK a Plataformas.
+                    PlataformasId = table.Column<int>(type: "integer", nullable: false),
+
+                    // Segunda parte de la PK compuesta y FK a Videojuegos.
+                    VideojuegosId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    // PK COMPUESTA: la misma pareja (plataforma, videojuego)
+                    // no puede repetirse, así se evita duplicar asociaciones.
+                    table.PrimaryKey("PK_PlataformaVideojuego",
+                        x => new { x.PlataformasId, x.VideojuegosId });
+
+                    // FK 1 con CASCADE: si se elimina una plataforma, se
+                    // borran sus filas de la tabla intermedia (no los juegos).
+                    table.ForeignKey(
+                        name: "FK_PlataformaVideojuego_Plataformas_PlataformasId",
+                        column: x => x.PlataformasId,
+                        principalTable: "Plataformas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+
+                    // FK 2 con CASCADE: al eliminar un videojuego se limpian
+                    // sus asociaciones, sin tocar las plataformas.
+                    table.ForeignKey(
+                        name: "FK_PlataformaVideojuego_Videojuegos_VideojuegosId",
+                        column: x => x.VideojuegosId,
+                        principalTable: "Videojuegos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            // Índice para el sentido inverso (Plataforma → Videojuegos):
+            // la PK compuesta ya indexa por PlataformasId como primera
+            // columna, pero no por VideojuegosId.
+            migrationBuilder.CreateIndex(
+                name: "IX_PlataformaVideojuego_VideojuegosId",
+                table: "PlataformaVideojuego",
+                column: "VideojuegosId");
+        }
+
+        // Down() elimina únicamente la tabla intermedia; los videojuegos y
+        // las plataformas siguen existiendo con todos sus datos.
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(name: "PlataformaVideojuego");
+        }
+    }
+}

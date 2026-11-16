@@ -1,0 +1,139 @@
+    // ===============================================================
+    // UPDATE — GET /Videojuegos/Edit/16
+    // Carga el registro y sus plataformas para precargar el formulario.
+    // ===============================================================
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null) return NotFound();
+
+        // Include(v => v.Plataformas) es imprescindible: sin él la
+        // colección llegaría vacía y se borrarían todas las asociaciones N:N.
+        var videojuego = await _context.Videojuegos
+            .Include(v => v.Plataformas)
+            .FirstOrDefaultAsync(v => v.Id == id);
+
+        if (videojuego == null) return NotFound();
+
+        var modelo = new VideojuegoFormViewModel
+        {
+            Videojuego = videojuego,
+            // Se convierten las plataformas actuales en ids para marcar
+            // los checkboxes correspondientes.
+            PlataformasSeleccionadas = videojuego.Plataformas.Select(p => p.Id).ToList()
+        };
+        await CargarListasAsync(modelo);
+        return View(modelo);
+    }
+
+    // ===============================================================
+    // UPDATE — POST /Videojuegos/Edit/16
+    // ===============================================================
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, VideojuegoFormViewModel modelo)
+    {
+        // El id de la ruta debe coincidir con el del formulario.
+        if (id != modelo.Videojuego.Id) return NotFound();
+
+        if (!ModelState.IsValid)
+        {
+            await CargarListasAsync(modelo);
+            return View(modelo);
+        }
+
+        // Se vuelve a consultar la entidad original (con sus plataformas)
+        // para no sobrescribir columnas que el formulario no envía, como
+        // FechaRegistro.
+        var videojuego = await _context.Videojuegos
+            .Include(v => v.Plataformas)
+            .FirstOrDefaultAsync(v => v.Id == id);
+
+        if (videojuego == null) return NotFound();
+
+        // Copia campo por campo. EF Core detecta los cambios al comparar
+        // el valor original con el nuevo (change tracking) y genera un
+        // UPDATE solo con las columnas modificadas.
+        videojuego.Titulo = modelo.Videojuego.Titulo;
+        videojuego.Descripcion = modelo.Videojuego.Descripcion;
+        videojuego.Precio = modelo.Videojuego.Precio;
+        videojuego.FechaLanzamiento = modelo.Videojuego.FechaLanzamiento;
+        videojuego.Disponible = modelo.Videojuego.Disponible;
+        videojuego.CantidadJugadores = modelo.Videojuego.CantidadJugadores;
+        videojuego.ClasificacionPorEdad = modelo.Videojuego.ClasificacionPorEdad;
+        videojuego.GeneroId = modelo.Videojuego.GeneroId;
+        videojuego.DesarrolladoraId = modelo.Videojuego.DesarrolladoraId;
+        videojuego.Multijugador = modelo.Videojuego.Multijugador;
+        videojuego.Observacion = modelo.Videojuego.Observacion;
+
+        // -----------------------------------------------------------
+        // ACTUALIZACIÓN DE LA RELACIÓN N:N
+        // Clear() quita de la colección todas las plataformas y Add()
+        // agrega las marcadas. EF Core compara el estado original con el
+        // nuevo y ejecuta DELETE/INSERT únicamente sobre la tabla
+        // intermedia "PlataformaVideojuego".
+        // -----------------------------------------------------------
+        videojuego.Plataformas.Clear();
+        foreach (var plataforma in await ObtenerPlataformasAsync(modelo.PlataformasSeleccionadas))
+        {
+            videojuego.Plataformas.Add(plataforma);
+        }
+
+        await _context.SaveChangesAsync();
+
+        TempData["Mensaje"] = $"Videojuego \"{videojuego.Titulo}\" actualizado correctamente.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ===============================================================
+    // DELETE — POST /Videojuegos/Delete/101
+    // ===============================================================
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        // Se incluye la colección para que EF Core elimine primero las
+        // filas de la tabla intermedia y después el videojuego.
+        var videojuego = await _context.Videojuegos
+            .Include(v => v.Plataformas)
+            .FirstOrDefaultAsync(v => v.Id == id);
+
+        if (videojuego != null)
+        {
+            _context.Videojuegos.Remove(videojuego);   // Marca como Deleted.
+            await _context.SaveChangesAsync();         // DELETE en cascada N:N.
+            TempData["Mensaje"] = $"Videojuego \"{videojuego.Titulo}\" eliminado.";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ===============================================================
+    // MÉTODOS AUXILIARES
+    // ===============================================================
+
+    /// <summary>Carga las listas de los formularios.</summary>
+    private async Task CargarListasAsync(VideojuegoFormViewModel modelo)
+    {
+        // Se consultan los catálogos ordenados por nombre y se convierten
+        // en SelectListItem (texto + valor) que Razor pinta como <option>.
+        var generos = await _context.Generos.OrderBy(g => g.Nombre).ToListAsync();
+        var desarrolladoras = await _context.Desarrolladoras.OrderBy(d => d.Nombre).ToListAsync();
+        var plataformas = await _context.Plataformas.OrderBy(p => p.Nombre).ToListAsync();
+
+        modelo.Generos = generos.Select(g => new SelectListItem(g.Nombre, g.Id.ToString())).ToList();
+        modelo.Desarrolladoras = desarrolladoras.Select(d => new SelectListItem(d.Nombre, d.Id.ToString())).ToList();
+        modelo.Plataformas = plataformas.Select(p => new SelectListItem($"{p.Nombre} ({p.Fabricante})", p.Id.ToString())).ToList();
+    }
+
+    /// <summary>
+    /// Traduce los ids marcados en el formulario a entidades Plataforma
+    /// administradas por el contexto (evita insertar plataformas nuevas).
+    /// </summary>
+    private async Task<List<Plataforma>> ObtenerPlataformasAsync(List<int>? ids)
+    {
+        if (ids == null || ids.Count == 0) return new List<Plataforma>();
+
+        return await _context.Plataformas
+            .Where(p => ids.Contains(p.Id))
+            .ToListAsync();
+    }

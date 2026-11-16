@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  text { font-family: "Segoe UI", Arial, sans-serif; }
+</style>
+</head>
+<body>
+<svg width="1540" height="560" viewBox="0 0 1540 560" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1540" height="560" fill="#ffffff"/>
+
+  <text x="770" y="46" text-anchor="middle" style="font-size:26px;font-weight:700;fill:#1f2a44">Ciclo de trabajo seguido con Code First</text>
+  <text x="770" y="76" text-anchor="middle" style="font-size:17px;fill:#4b5563">El orden es cronológico: cada etapa se ejecutó y verificó antes de continuar con la siguiente</text>
+
+  <!-- ETAPA 1 -->
+  <rect x="30" y="150" width="225" height="210" rx="14" fill="#eef2ff" stroke="#3446a8" stroke-width="2.5"/>
+  <circle cx="72" cy="192" r="20" fill="#3446a8"/>
+  <text x="72" y="199" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#ffffff">1</text>
+  <text x="104" y="199" style="font-size:20px;font-weight:700;fill:#1f2a44">Modelo</text>
+  <text x="50" y="248" style="font-size:16px;fill:#374151">Clases C# con</text>
+  <text x="50" y="272" style="font-size:16px;fill:#374151">propiedades,</text>
+  <text x="50" y="296" style="font-size:16px;fill:#374151">tipos y</text>
+  <text x="50" y="320" style="font-size:16px;fill:#374151">anotaciones</text>
+
+  <!-- ETAPA 2 -->
+  <rect x="290" y="150" width="225" height="210" rx="14" fill="#eef2ff" stroke="#3446a8" stroke-width="2.5"/>
+  <circle cx="332" cy="192" r="20" fill="#3446a8"/>
+  <text x="332" y="199" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#ffffff">2</text>
+  <text x="364" y="199" style="font-size:20px;font-weight:700;fill:#1f2a44">DbContext</text>
+  <text x="310" y="248" style="font-size:16px;fill:#374151">DbSet por</text>
+  <text x="310" y="272" style="font-size:16px;fill:#374151">entidad y</text>
+  <text x="310" y="296" style="font-size:16px;fill:#374151">OnModelCreating</text>
+  <text x="310" y="320" style="font-size:16px;fill:#374151">con las relaciones</text>
+
+  <!-- ETAPA 3 -->
+  <rect x="550" y="150" width="225" height="210" rx="14" fill="#fff7e6" stroke="#c47f00" stroke-width="2.5"/>
+  <circle cx="592" cy="192" r="20" fill="#c47f00"/>
+  <text x="592" y="199" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#ffffff">3</text>
+  <text x="624" y="199" style="font-size:20px;font-weight:700;fill:#1f2a44">Migración</text>
+  <text x="570" y="248" style="font-size:15px;fill:#374151;font-family:Consolas,monospace">migrations add</text>
+  <text x="570" y="272" style="font-size:16px;fill:#374151">EF compara el</text>
+  <text x="570" y="296" style="font-size:16px;fill:#374151">modelo con la</text>
+  <text x="570" y="320" style="font-size:16px;fill:#374151">última instantánea</text>
+
+  <!-- ETAPA 4 -->
+  <rect x="810" y="150" width="225" height="210" rx="14" fill="#fff7e6" stroke="#c47f00" stroke-width="2.5"/>
+  <circle cx="852" cy="192" r="20" fill="#c47f00"/>
+  <text x="852" y="199" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#ffffff">4</text>
+  <text x="884" y="199" style="font-size:20px;font-weight:700;fill:#1f2a44">PostgreSQL</text>
+  <text x="830" y="248" style="font-size:15px;fill:#374151;font-family:Consolas,monospace">database update</text>
+  <text x="830" y="272" style="font-size:16px;fill:#374151">Aplica el SQL y</text>
+  <text x="830" y="296" style="font-size:16px;fill:#374151">registra la fila en</text>
+  <text x="830" y="320" style="font-size:16px;fill:#374151">__EFMigrationsHistory</text>
+
+  <!-- ETAPA 5 -->
+  <rect x="1070" y="150" width="225" height="210" rx="14" fill="#eef2ff" stroke="#3446a8" stroke-width="2.5"/>
+  <circle cx="1112" cy="192" r="20" fill="#3446a8"/>
+  <text x="1112" y="199" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#ffffff">5</text>
+  <text x="1144" y="199" style="font-size:20px;font-weight:700;fill:#1f2a44">CRUD</text>
+  <text x="1090" y="248" style="font-size:16px;fill:#374151">Controllers,</text>
+  <text x="1090" y="272" style="font-size:16px;fill:#374151">vistas Razor y</text>
+  <text x="1090" y="296" style="font-size:16px;fill:#374151">validaciones</text>
+  <text x="1090" y="320" style="font-size:16px;fill:#374151">sobre el contexto</text>
+
+  <!-- ETAPA 6 -->
+  <rect x="1330" y="150" width="180" height="210" rx="14" fill="#e8f7ef" stroke="#1f7a4d" stroke-width="2.5"/>
+  <circle cx="1372" cy="192" r="20" fill="#1f7a4d"/>
+  <text x="1372" y="199" text-anchor="middle" style="font-size:20px;font-weight:700;fill:#ffffff">6</text>
+  <text x="1404" y="199" style="font-size:20px;font-weight:700;fill:#1f2a44">Evolución</text>
+  <text x="1350" y="248" style="font-size:16px;fill:#374151">+2 campos y</text>
+  <text x="1350" y="272" style="font-size:16px;fill:#374151">relación N:N,</text>
+  <text x="1350" y="296" style="font-size:16px;fill:#374151">con nuevas</text>
+  <text x="1350" y="320" style="font-size:16px;fill:#374151">migraciones</text>
+
+  <!-- flechas -->
+  <g stroke="#6b7280" stroke-width="2.5" fill="none">
+    <path d="M 255 255 L 282 255"/><path d="M 275 249 L 284 255 L 275 261"/>
+    <path d="M 515 255 L 542 255"/><path d="M 535 249 L 544 255 L 535 261"/>
+    <path d="M 775 255 L 802 255"/><path d="M 795 249 L 804 255 L 795 261"/>
+    <path d="M 1035 255 L 1062 255"/><path d="M 1055 249 L 1064 255 L 1055 261"/>
+    <path d="M 1295 255 L 1322 255"/><path d="M 1315 249 L 1324 255 L 1315 261"/>
+  </g>
+
+  <!-- base de datos -->
+  <rect x="430" y="430" width="680" height="74" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="770" y="460" text-anchor="middle" style="font-size:18px;font-weight:600;fill:#1f2a44">Base de datos PostgreSQL: CatalogoVideojuegosDb</text>
+  <text x="770" y="486" text-anchor="middle" style="font-size:15px;fill:#4b5563">Toda la estructura nace del modelo (Code First), nunca se creó una tabla a mano</text>
+
+  <g stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 4" fill="none">
+    <path d="M 662 360 L 662 430"/>
+    <path d="M 922 360 L 922 430"/>
+  </g>
+  <text x="670" y="400" style="font-size:14px;fill:#6b7280">ejecuta SQL</text>
+  <text x="930" y="400" style="font-size:14px;fill:#6b7280">lee y escribe</text>
+</svg>
+</body>
+</html>

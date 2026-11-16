@@ -1,0 +1,33 @@
+@model Plataforma
+
+@{
+    ViewData["Title"] = "Eliminar plataforma";
+}
+
+<div class="page-header">
+    <h1>Eliminar plataforma</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Volver al listado</a>
+</div>
+
+<div class="form-card">
+    <div class="alert alert-warning">
+        ¿Confirma que desea eliminar la plataforma <strong>@Model.Nombre</strong>?
+        Se eliminarán sus @Model.Videojuegos.Count asociaciones en la tabla intermedia,
+        pero los videojuegos se conservarán.
+    </div>
+
+    <dl class="row detalle-dl mb-4">
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+        <dt class="col-sm-3">Fabricante</dt>
+        <dd class="col-sm-9">@Model.Fabricante</dd>
+        <dt class="col-sm-3 mb-0">Videojuegos asociados</dt>
+        <dd class="col-sm-9 mb-0">@Model.Videojuegos.Count</dd>
+    </dl>
+
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+        <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancelar</a>
+    </form>
+</div>

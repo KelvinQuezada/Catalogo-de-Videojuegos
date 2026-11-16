@@ -1,0 +1,40 @@
+@model Plataforma
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Nombre" class="form-label"></label>
+        <input asp-for="Nombre" class="form-control" placeholder="Ej. PlayStation 5" />
+        <span asp-validation-for="Nombre" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Fabricante" class="form-label"></label>
+        <input asp-for="Fabricante" class="form-control" placeholder="Ej. Sony" />
+        <span asp-validation-for="Fabricante" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="FechaLanzamiento" class="form-label"></label>
+        <input asp-for="FechaLanzamiento" type="date" class="form-control" />
+        <span asp-validation-for="FechaLanzamiento" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Generacion" class="form-label"></label>
+        <input asp-for="Generacion" type="number" min="1" max="10" class="form-control" />
+        <span asp-validation-for="Generacion" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="PrecioBase" class="form-label"></label>
+        <div class="input-group">
+            <span class="input-group-text">USD</span>
+            <input asp-for="PrecioBase" type="number" step="0.01" min="0" class="form-control" />
+        </div>
+        <span asp-validation-for="PrecioBase" class="text-danger small"></span>
+    </div>
+    <div class="col-12">
+        <div class="form-check form-switch">
+            <input asp-for="Activa" class="form-check-input" role="switch" />
+            <label asp-for="Activa" class="form-check-label"></label>
+        </div>
+    </div>
+</div>

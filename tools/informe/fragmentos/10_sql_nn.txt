@@ -1,0 +1,53 @@
+-- =====================================================================
+-- Catálogo de videojuegos — carga de la relación N:N (etapa 2)
+-- Ejecutar DESPUÉS de: dotnet ef database update
+--   (migración AgregarRelacionVideojuegoPlataforma)
+-- Tabla intermedia generada por EF Core: "PlataformaVideojuego"
+-- =====================================================================
+
+BEGIN;   -- Transacción: todo o nada.
+
+-- Vacía solo la tabla intermedia. Es seguro porque los videojuegos y las
+-- plataformas viven en sus propias tablas: aquí únicamente se guardan
+-- las parejas que forman la relación.
+TRUNCATE TABLE "PlataformaVideojuego" RESTART IDENTITY;
+
+-- 349 ASOCIACIONES videojuego ↔ plataforma.
+-- El orden de columnas es (PlataformasId, VideojuegosId), el mismo que
+-- EF Core usa en la PK compuesta.
+INSERT INTO "PlataformaVideojuego" ("PlataformasId", "VideojuegosId") VALUES
+  (6, 1),    -- Zelda: Breath of the Wild → Nintendo Switch
+  (6, 2),    -- Super Mario Odyssey → Nintendo Switch
+  (6, 3),    -- Mario Kart 8 Deluxe → Nintendo Switch
+  (1, 16),   -- Cyberpunk 2077 → PC
+  (2, 16),   -- Cyberpunk 2077 → PlayStation 5
+  (4, 16),   -- Cyberpunk 2077 → Xbox Series X|S
+  (8, 16),   -- Cyberpunk 2077 → Steam Deck
+  -- ... (342 filas más en el archivo completo)
+
+-- ON CONFLICT evita el error de llave duplicada si la pareja ya existe:
+-- hace el script idempotente (se puede repetir sin duplicar datos).
+ON CONFLICT ("PlataformasId", "VideojuegosId") DO NOTHING;
+
+COMMIT;
+
+-- ---------------------------------------------------------------
+-- VERIFICACIÓN 1: sentido Videojuego → Plataformas
+-- Un mismo videojuego asociado a varias plataformas.
+-- ---------------------------------------------------------------
+SELECT v."Id", v."Titulo", COUNT(pv."PlataformasId") AS plataformas
+FROM "Videojuegos" v
+LEFT JOIN "PlataformaVideojuego" pv ON pv."VideojuegosId" = v."Id"
+GROUP BY v."Id", v."Titulo"
+ORDER BY plataformas DESC, v."Id"
+LIMIT 10;
+
+-- ---------------------------------------------------------------
+-- VERIFICACIÓN 2: sentido inverso Plataforma → Videojuegos
+-- Una misma plataforma asociada a muchos videojuegos.
+-- ---------------------------------------------------------------
+SELECT p."Id", p."Nombre", COUNT(pv."VideojuegosId") AS videojuegos
+FROM "Plataformas" p
+LEFT JOIN "PlataformaVideojuego" pv ON pv."PlataformasId" = p."Id"
+GROUP BY p."Id", p."Nombre"
+ORDER BY videojuegos DESC, p."Id";

@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+    var ultimos = (List<Videojuego>)ViewBag.UltimosVideojuegos;
+}
+
+<div class="p-4 p-md-5 mb-4 rounded-4 text-white" style="background: linear-gradient(135deg, #1f2a44 0%, #3446a8 100%);">
+    <h1 class="display-6 fw-semibold">Catálogo de videojuegos</h1>
+    <p class="lead mb-3">
+        Aplicación ASP.NET Core MVC con Entity Framework Core y PostgreSQL bajo el enfoque Code First.
+    </p>
+    <a class="btn btn-light" asp-controller="Videojuegos" asp-action="Index">Explorar el catálogo</a>
+    <a class="btn btn-outline-light" asp-controller="Videojuegos" asp-action="Create">Registrar videojuego</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalVideojuegos</div>
+            <div class="stat-label">Videojuegos</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalPlataformas</div>
+            <div class="stat-label">Plataformas</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalDesarrolladoras</div>
+            <div class="stat-label">Desarrolladoras</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalGeneros</div>
+            <div class="stat-label">Géneros</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="page-header">
+            <h2 class="h4 mb-0">Últimos videojuegos registrados</h2>
+            <a class="btn btn-sm btn-outline-primary" asp-controller="Videojuegos" asp-action="Index">Ver todos</a>
+        </div>
+        <div class="table-card table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Género</th>
+                        <th>Desarrolladora</th>
+                        <th class="text-end">Precio</th>
+                        <th>Plataformas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var v in ultimos)
+                {
+                    <tr>
+                        <td>
+                            <a class="text-decoration-none fw-medium" asp-controller="Videojuegos" asp-action="Details" asp-route-id="@v.Id">@v.Titulo</a>
+                        </td>
+                        <td>@v.Genero?.Nombre</td>
+                        <td>@v.Desarrolladora?.Nombre</td>
+                        <td class="text-end text-nowrap">@v.Precio.ToString("0.00") USD</td>
+                        <td>
+                            @foreach (var plataforma in v.Plataformas)
+                            {
+                                <span class="badge badge-plataforma">@plataforma.Nombre</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="page-header">
+            <h2 class="h4 mb-0">Plataformas con más títulos</h2>
+        </div>
+        <div class="form-card">
+            <p class="text-muted small mb-3">
+                Conteo obtenido recorriendo la relación muchos a muchos
+                <strong>Videojuego ↔ Plataforma</strong> a través de la tabla intermedia
+                <code>PlataformaVideojuego</code>.
+            </p>
+            @foreach (var item in ViewBag.TopPlataformas)
+            {
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <span>@item.Nombre</span>
+                    <span class="badge bg-primary rounded-pill">@item.Cantidad</span>
+                </div>
+            }
+            <div class="mt-3 small text-muted">
+                Asociaciones registradas: <strong>@ViewBag.TotalAsociaciones</strong>
+            </div>
+        </div>
+    </div>
+</div>

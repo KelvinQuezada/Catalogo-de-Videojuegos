@@ -1,0 +1,53 @@
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace CatalogoVideojuegos.Migrations
+{
+    /// <summary>
+    /// Segunda migración: evolución del modelo con dos campos nuevos en
+    /// Videojuego. Fue generada con:
+    ///   dotnet ef migrations add ActualizarVideojuego
+    /// Se aplicó con la base de datos ya cargada (100 registros).
+    /// </summary>
+    public partial class ActualizarVideojuego : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            // -----------------------------------------------------------
+            // CAMPO 1: "Multijugador" (bool NOT NULL).
+            // Es obligatorio, por lo que la migración debe indicar qué
+            // valor reciben las filas existentes: defaultValue: false.
+            // Sin ese valor PostgreSQL rechazaría el ALTER TABLE porque
+            // las 100 filas quedarían con NULL en una columna NOT NULL.
+            // -----------------------------------------------------------
+            migrationBuilder.AddColumn<bool>(
+                name: "Multijugador",       // Nombre de la columna.
+                table: "Videojuegos",       // Tabla destino.
+                type: "boolean",            // Tipo PostgreSQL.
+                nullable: false,            // NOT NULL.
+                defaultValue: false);       // Valor para las filas ya existentes.
+
+            // -----------------------------------------------------------
+            // CAMPO 2: "Observacion" (varchar(300) NULL).
+            // Al ser nullable no necesita valor por omisión: las filas
+            // antiguas simplemente quedan con NULL.
+            // -----------------------------------------------------------
+            migrationBuilder.AddColumn<string>(
+                name: "Observacion",
+                table: "Videojuegos",
+                type: "character varying(300)",
+                maxLength: 300,
+                nullable: true);
+        }
+
+        // Down() elimina las dos columnas y devuelve el esquema anterior.
+        // Los datos de esas columnas se pierden, pero el resto de la tabla
+        // permanece intacto.
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(name: "Multijugador", table: "Videojuegos");
+            migrationBuilder.DropColumn(name: "Observacion", table: "Videojuegos");
+        }
+    }
+}
