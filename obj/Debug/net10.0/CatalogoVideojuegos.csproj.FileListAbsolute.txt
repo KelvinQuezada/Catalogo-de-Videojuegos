@@ -187,3 +187,4 @@ C:\Users\antho\Desktop\CatalogoVideojuegos\obj\Debug\net10.0\CatalogoVideojuegos
 C:\Users\antho\Desktop\CatalogoVideojuegos\obj\Debug\net10.0\ref\CatalogoVideojuegos.dll
 C:\Users\antho\Desktop\CatalogoVideojuegos\bin\Debug\net10.0\sql\datos_plataformas.json
 C:\Users\antho\Desktop\CatalogoVideojuegos\obj\Debug\net10.0\compressed\pg7kwla1fe-{0}-2mtkx4952j-2mtkx4952j.gz
+C:\Users\antho\Desktop\CatalogoVideojuegos\obj\Debug\net10.0\CatalogoVideojuegos.sourcelink.json
